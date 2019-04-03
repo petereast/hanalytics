@@ -1,0 +1,12 @@
+http://localhost:8000
+
+--
+--
+POST /
+
+--
+
+POST /capture
+{
+  
+}
