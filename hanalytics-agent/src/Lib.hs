@@ -8,6 +8,7 @@ module Lib
 import Conduit
 import Data.Aeson
 import qualified Data.ByteString.Char8 as C
+import Data.Time
 import Database.Redis
 import GHC.Generics
 
@@ -33,10 +34,19 @@ eventToStreamPairs event =
   , ("session_id", C.pack $ session_id event)
   ]
 
+-- NOTE: I thought the return type of this should be IO
+addTime :: [(C.ByteString, C.ByteString)] -> IO [(C.ByteString, C.ByteString)]
+addTime withoutTime = do
+  time <- show <$> getCurrentTime
+  return $ withoutTime ++ [(C.pack "time", C.pack time)]
+
 -- TODO: For optimisation, all of these should be done
 -- in one RunRedis context (per thread?). This is a naieve solution
 -- TODO: Error handling?
 pushEventToStream :: Connection -> AnalyticsEvent -> IO ()
 pushEventToStream redisConnection event = do
-  runRedis redisConnection $ xadd "events" "*" $ eventToStreamPairs event
+  outgoing_event <- preprocessEvent event
+  runRedis redisConnection $ xadd "events" "*" outgoing_event
   return ()
+  where
+    preprocessEvent = addTime . eventToStreamPairs

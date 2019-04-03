@@ -27,7 +27,7 @@ dependencies:
 - aeson >= 1.4.2.0
 - snap-core >= 0.9
 - snap-server >= 0.9
-
+- time >= 1.8.0.2
 
 library:
   source-dirs: src
