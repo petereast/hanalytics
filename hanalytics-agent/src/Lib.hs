@@ -1,7 +1,8 @@
 {-# LANGUAGE OverloadedStrings, DeriveGeneric #-}
 
 module Lib
-  ( someFunc
+  ( AnalyticsEvent
+  , pushEventToStream
   ) where
 
 import Conduit
@@ -21,6 +22,8 @@ data AnalyticsEvent = AnalyticsEvent
 
 instance ToJSON AnalyticsEvent
 
+instance FromJSON AnalyticsEvent
+
 eventToStreamPairs :: AnalyticsEvent -> [(C.ByteString, C.ByteString)]
 eventToStreamPairs event =
   [ ("action", C.pack $ action event)
@@ -30,32 +33,10 @@ eventToStreamPairs event =
   , ("session_id", C.pack $ session_id event)
   ]
 
-someFunc :: IO ()
-someFunc = do
-  redisConnection <- checkedConnect defaultConnectInfo
-  pushEventToStream
-    redisConnection
-    AnalyticsEvent
-      { action = "Some action"
-      , category = "some category"
-      , resource = "some resource"
-      , label = "some label"
-      , session_id = "session_id"
-      }
-  pushEventToStream
-    redisConnection
-    AnalyticsEvent
-      { action = "Some other action"
-      , category = "some other category"
-      , resource = "some other resource"
-      , label = "some other label"
-      , session_id = "another_session_id"
-      }
-
 -- TODO: For optimisation, all of these should be done
 -- in one RunRedis context (per thread?). This is a naieve solution
+-- TODO: Error handling?
 pushEventToStream :: Connection -> AnalyticsEvent -> IO ()
 pushEventToStream redisConnection event = do
-  print $ encode event
   runRedis redisConnection $ xadd "events" "*" $ eventToStreamPairs event
   return ()
