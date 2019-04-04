@@ -5,7 +5,6 @@ module Lib
   , pushEventToStream
   ) where
 
-import Conduit
 import Data.Aeson
 import qualified Data.ByteString.Char8 as C
 import Data.Time
