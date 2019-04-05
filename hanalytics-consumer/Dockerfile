@@ -18,6 +18,6 @@ RUN stack build --only-dependencies
 
 # Add and Install Application Code
 COPY . /opt
-RUN stack build
+RUN stack build --fast
 
 CMD ["stack", "run"]
