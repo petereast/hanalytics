@@ -24,6 +24,8 @@ services:
       - "8001:8001"
     networks:
       - infra_redis
+    environment:
+      REDIS_URL: "redis"
 networks:
   infra_redis:
     external:

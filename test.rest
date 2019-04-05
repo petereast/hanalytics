@@ -2,11 +2,15 @@ http://localhost:8000
 
 --
 --
-POST /
+GET /
 
 --
 
 POST /capture
 {
-  
+  "action": "test",
+  "category": "some test",
+  "label": "test call",
+  "resource": "/",
+  "session_id": "alskfjbsaflkj"
 }
