@@ -2,22 +2,20 @@ FROM haskell:8
 
 MAINTAINER Peter East <petereast+docker@pm.me>
 
-WORKDIR /opt
+WORKDIR /opt/server
 
-RUN stack update
+RUN cabal update
 
 # Add just the .cabal file to capture dependencies
-COPY ./package.yaml /opt/package.yaml
+COPY ./hanalytics-agent.cabal /opt/server/hanalytics-agent.cabal
 
 # Docker will cache this command as a layer, freeing us up to
 # modify source code without re-installing dependencies
 # (unless the .cabal file changes!)
-RUN stack setup
-RUN stack init
-RUN stack build --only-dependencies
+RUN cabal install --only-dependencies -j4
 
 # Add and Install Application Code
-COPY . /opt
-RUN stack build --fast
+COPY . /opt/server
+RUN cabal install
 
-CMD ["stack", "run"]
+CMD ["cabal", "run"]
