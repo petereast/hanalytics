@@ -54,18 +54,23 @@ placeEventInBucket redisConnection event =
     placeIntoBuckets Nothing event = pure ()
     placeIntoBuckets (Just bucketId) event = do
       runRedis redisConnection $ do
-        place label event
-        place category event
-        place action event
+        place label "label" event
+        place category "category" event
+        place action "action" event
+        place resource "resource" event
+        place session_id "session_id" event
         incr "processed_events"
       return ()
       where
-        place :: (AnalyticsEvent -> String) -> AnalyticsEvent -> Redis ()
-        place selector event = do
-          lpush
-            (C.pack $ "label:" ++ selector event ++ ":" ++ bucketId)
-            [L.toStrict $ encode event]
+        place ::
+             (AnalyticsEvent -> String) -> String -> AnalyticsEvent -> Redis ()
+        place selector label event = do
+          lpush bucketName [L.toStrict $ encode event]
+          expire bucketName $ 60 * 5
           return ()
+          where
+            bucketName =
+              C.pack $ label ++ ":" ++ selector event ++ ":" ++ bucketId
 -- Incoming events are placed in buckets aggregated by
 -- - time
 -- - attribtue-value
