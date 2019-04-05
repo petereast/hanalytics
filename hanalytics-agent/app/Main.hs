@@ -6,15 +6,18 @@ import Control.Applicative
 import Control.Monad.IO.Class
 import Data.Aeson
 import qualified Data.ByteString.Lazy as L
-import Database.Redis (Connection, checkedConnect, defaultConnectInfo)
+import Database.Redis hiding (decode)
 import Lib (AnalyticsEvent, pushEventToStream)
 import Snap.Core (Snap, ifTop, readRequestBody, route, writeBS)
 import Snap.Http.Server (quickHttpServe)
 
 main :: IO ()
 main = do
-  redisConnection <- checkedConnect defaultConnectInfo
+  redisConnection <- checkedConnect redisConnectionInfo
   quickHttpServe $ webServer redisConnection
+  where
+    redisConnectionInfo :: ConnectInfo
+    redisConnectionInfo = defaultConnectInfo {connectHost = "redis"}
 
 -- TODO: Investigate use of websockets
 webServer :: Connection -> Snap ()

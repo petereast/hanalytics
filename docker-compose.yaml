@@ -1,0 +1,21 @@
+version: "3"
+services:
+  redis:
+    image: redis:5
+    ports:
+      - "6379:6379"
+    networks:
+      - infra_redis
+  agent:
+    depends_on: ["redis"]
+    build:
+      dockerfile: ./Dockerfile
+      context: "./hanalytics-agent/"
+    ports:
+      - "8000:8000"
+    networks:
+      - infra_redis
+networks:
+  infra_redis:
+    external:
+      name: infra_redis
