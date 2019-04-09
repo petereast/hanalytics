@@ -39,12 +39,11 @@ readStream redisConnection consumerGroupId = do
     afterwards (events, callback) = do
       handleEvents events
       callback ()
-      where
-        handleEvents :: [AnalyticsEvent] -> IO ()
-        handleEvents [] = pure ()
-        handleEvents events' = do
-          placeEventInBucket redisConnection $ head events'
-          handleEvents $ tail events'
+    handleEvents :: [AnalyticsEvent] -> IO ()
+    handleEvents [] = pure ()
+    handleEvents events' = do
+      placeEventInBucket redisConnection $ head events'
+      handleEvents $ tail events'
 
 placeEventInBucket :: Connection -> AnalyticsEvent -> IO ()
 placeEventInBucket redisConnection event =
@@ -65,12 +64,12 @@ placeEventInBucket redisConnection event =
         place ::
              (AnalyticsEvent -> String) -> String -> AnalyticsEvent -> Redis ()
         place selector label event = do
+          let bucketName =
+                C.pack $ label ++ ":" ++ selector event ++ ":" ++ bucketId
           lpush bucketName [L.toStrict $ encode event]
-          expire bucketName $ 60 * 5
+          expire bucketName $ 60 * 10
           return ()
-          where
-            bucketName =
-              C.pack $ label ++ ":" ++ selector event ++ ":" ++ bucketId
+-- TODO: Somehow cumulatively aggregate these into one bucket
 -- Incoming events are placed in buckets aggregated by
 -- - time
 -- - attribtue-value
