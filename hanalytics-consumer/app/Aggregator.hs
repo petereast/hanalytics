@@ -72,6 +72,7 @@ calculateEventsPerSession events = do
         update Nothing = Map.insert (session_id ev) 1 acc
         update (Just id) = Map.adjust succ (session_id ev) acc
 
+-- Maybe this code should go into another consumer? 
 createAggregatedData :: [AnalyticsEvent] -> AggregatedAnalytics
 createAggregatedData events =
   AggregatedAnalytics
