@@ -44,8 +44,8 @@ addTime withoutTime = do
 -- TODO: Error handling?
 pushEventToStream :: Connection -> AnalyticsEvent -> IO ()
 pushEventToStream redisConnection event = do
-  outgoing_event <- preprocessEvent event
-  runRedis redisConnection $ xadd "events" "*" outgoing_event
+  outgoing_event <- (addTime . eventToStreamPairs) event
+  runRedis redisConnection $ do
+    xadd "events" "*" outgoing_event
+    incr "events_published"
   return ()
-  where
-    preprocessEvent = addTime . eventToStreamPairs

@@ -18,7 +18,7 @@ import System.IO.Unsafe (unsafePerformIO)
 main :: IO ()
 main = do
   putStrLn "[info] Startup - master thread"
-  streamConsumer
+  consumerThreadId <- forkIO streamConsumer
   -- put an api here
   return ()
 

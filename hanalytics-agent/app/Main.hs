@@ -31,7 +31,10 @@ analyticsEndpoint redisConnection = do
   generateResponse req
   where
     generateResponse Nothing = writeBS "NOT OK"
-    generateResponse (Just event) = do
+    generateResponse (Just event)
+      -- TODO: Validate that the strings don't contain colons or other stuff that
+      -- could fucc
+     = do
       liftIO $ pushEventToStream redisConnection event
       writeBS "OK"
 
