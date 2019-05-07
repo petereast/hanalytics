@@ -3,8 +3,6 @@ import { ReactNode } from "react";
 import { Button } from "react-bulma-components";
 import { Helmet } from "react-helmet";
 
-const rust = require("../../assets/rust.svg");
-
 export default class Home extends React.PureComponent<{}, {}> {
   public static fetchData(): Promise<void> {
     console.log("Homepage fetch data");
@@ -20,10 +18,11 @@ export default class Home extends React.PureComponent<{}, {}> {
         </Helmet>
 
         <h1>Homepage</h1>
+        <p>
+          Hanalytics is a thing to do a thing
+        </p>
 
         <Button color="primary">My Bulma button</Button>
-
-        <img src={rust} />
       </div>
     );
   }
