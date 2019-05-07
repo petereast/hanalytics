@@ -1,0 +1,39 @@
+{
+  "compilerOptions": {
+    "lib": [
+      "dom",
+      "es2016"
+    ],
+    "baseUrl": ".",
+    "moduleResolution": "node",
+    "target": "es6",
+    "module": "commonjs",
+    "isolatedModules": false,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "declaration": true,
+    "noImplicitAny": true,
+    "noImplicitUseStrict": false,
+    "removeComments": false,
+    "preserveConstEnums": true,
+    "strictNullChecks": true,
+    "resolveJsonModule": true,
+    "suppressImplicitAnyIndexErrors": true,
+    "rootDir": "src",
+    "outDir": "dist",
+    "jsx": "React",
+    "strict": true,
+    "typeRoots": [
+      "./node_modules/@types",
+      "./src/typings"
+    ]
+  },
+  "include": [
+    "src"
+  ],
+  "paths": {
+    "assets/*": "image-mock.ts",
+    "*.jpg": "image-mock.ts",
+    "assets/small.jpg": "image-mock.ts",
+  }
+}
