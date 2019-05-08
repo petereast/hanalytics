@@ -21,6 +21,7 @@ import Database.Redis
   ( Connection
   , StreamsRecord
   , XReadResponse
+  , expire
   , incr
   , keyValues
   , lpush
@@ -85,9 +86,9 @@ payloadFromRedis redisConnection consumerGroupId thisConsumer =
       let messageId = head messageIds
       runRedis redisConnection $ do
         xack "events" (C.pack consumerGroupId) (C.pack messageId)
-        incr "event_acked_total"
-        lpush "debug_acked_events" [C.pack messageId]
-      putStrLn $ "Debug: ACKing event: " ++ messageId
+        incr "debug:event_acked_total"
+        lpush "debug:acked_events" [C.pack messageId]
+        expire "debug:acked_events" 60
       ackEvents $ tail messageIds
     handlePayload ::
          Either f (Maybe [XReadResponse]) -> ([AnalyticsEvent], () -> IO ())
